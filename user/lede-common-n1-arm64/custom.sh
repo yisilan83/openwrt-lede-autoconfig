@@ -23,7 +23,7 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armsr/g' package/lean/autoco
 
 # Add luci-app-amlogic
 dl_git_sub https://github.com/ophub/luci-app-amlogic package/luci-app-amlogic luci-app-amlogic main
-sed -i "s|amlogic_firmware_repo.*|amlogic_firmware_repo 'https://github.com/alecthw/openwrt-actions'|g" package/luci-app-amlogic/root/etc/config/amlogic
+sed -i "s|amlogic_firmware_repo.*|amlogic_firmware_repo 'https://github.com/yisilan83/openwrt-lede-autoconfig'|g" package/luci-app-amlogic/root/etc/config/amlogic
 sed -i "s|ARMv8|lede-common-n1|g" package/luci-app-amlogic/root/etc/config/amlogic
 
 cat package/lean/default-settings/files/zzz-default-settings

@@ -110,7 +110,6 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
     fi
     if [ -n "$LUCI_APP_OPENCLASH_DIR" ]; then
         copy_s $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/config/openclash $LUCI_APP_OPENCLASH_DIR/root/etc/config/openclash
-        # sed -i '/^config dns_servers/,$d' $LUCI_APP_OPENCLASH_DIR/root/etc/config/openclash
 
         # config runtime config file
         copy_s $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/openclash/config $LUCI_APP_OPENCLASH_DIR/root/etc/openclash/config
@@ -129,7 +128,6 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
         mkdir -p $LUCI_APP_OPENCLASH_DIR/root/etc/openclash/core
         clash_meta_version=$(curl -kLs "https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
         echo "clash_meta_version: ${clash_meta_version}"
-        # mihomo-linux-amd64-compatible-v1.17.0.gz
         dl_curl https://github.com/MetaCubeX/mihomo/releases/latest/download/mihomo-linux-${openclash_arch}-${clash_meta_version}.gz $LUCI_APP_OPENCLASH_DIR/root/etc/openclash/core/clash_meta.gz
 
         gzip -f -d $LUCI_APP_OPENCLASH_DIR/root/etc/openclash/core/clash_meta.gz
@@ -166,7 +164,6 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
         copy_s $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/config/vlmcsd package/feeds/packages/vlmcsd/files/vlmcsd.conf
     fi
 
-
     ZEROTIER_DIR=""
     if [ -d "package/zerotier" ]; then
         ZEROTIER_DIR="package/zerotier"
@@ -178,5 +175,32 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
         if [ -f "$GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/config/zero.tar.gz" ]; then
             tar xzf $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/config/zero.tar.gz -C $ZEROTIER_DIR/files/etc/config/
         fi
+    fi
+
+    TAILSCALE_DIR=""
+    if [ -d "package/tailscale" ]; then
+        TAILSCALE_DIR="package/tailscale"
+    fi
+    if [ -n "$TAILSCALE_DIR" ]; then
+        tailscale_arch="${build_arch}"
+        case "${build_arch}" in
+        arm64)
+            tailscale_arch="arm64"
+            ;;
+        amd64)
+            tailscale_arch="amd64"
+            ;;
+        *)
+            echo "Unknown arch for tailscale: ${build_arch}, using as-is"
+            ;;
+        esac
+        echo "Downloading Tailscale 1.98.3 for ${tailscale_arch}..."
+        dl_curl https://pkgs.tailscale.com/stable/tailscale_1.98.3_${tailscale_arch}.tgz $TAILSCALE_DIR/tailscale.tgz
+        tar xzf $TAILSCALE_DIR/tailscale.tgz -C $TAILSCALE_DIR/
+        cp $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}/tailscale $TAILSCALE_DIR/tailscale
+        cp $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}/tailscaled $TAILSCALE_DIR/tailscaled
+        chmod 755 $TAILSCALE_DIR/tailscale $TAILSCALE_DIR/tailscaled
+        rm -rf $TAILSCALE_DIR/tailscale.tgz $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}
+        echo "Tailscale 1.98.3 installed for ${tailscale_arch}"
     fi
 fi
