@@ -102,7 +102,7 @@ define Package/tailscale/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DIR) $(1)/etc/tailscale
+	$(INSTALL_DIR) $(1)/etc/tailscale/state
 	$(INSTALL_BIN) ./tailscale $(1)/usr/sbin/
 	$(INSTALL_BIN) ./tailscaled $(1)/usr/sbin/
 	$(INSTALL_BIN) ./files/tailscale.init $(1)/etc/init.d/tailscale
@@ -122,6 +122,7 @@ USE_PROCD=1
 start_service() {
     procd_open_instance
     procd_set_param command /usr/sbin/tailscaled
+    procd_set_param env TS_STATE_DIR=/etc/tailscale/state
     procd_set_param env TS_DEBUG_FIREWALL_MODE=auto
     procd_set_param limits nofile="65536 65536"
     procd_set_param respawn
@@ -129,7 +130,7 @@ start_service() {
 }
 
 stop_service() {
-    /usr/sbin/tailscale down 2>/dev/null
+    env TS_STATE_DIR=/etc/tailscale/state /usr/sbin/tailscale down 2>/dev/null
 }
 INIT_EOF
 
