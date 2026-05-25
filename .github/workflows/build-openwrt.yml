@@ -4,13 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: 0 22 * * 6
-  # push:
-  #   branches:
-  #     - master
-  #   paths:
-  #     - "start"
-  # release:
-  #   types: [published]
 
 permissions:
   contents: read
@@ -18,7 +11,7 @@ permissions:
 jobs:
   build:
     permissions:
-      contents: write # for release creation
+      contents: write
 
     name: Build ${{matrix.target}}
 
@@ -28,7 +21,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      # max-parallel: 2
       matrix:
         target:
           - lede-openclash-x86-amd64
@@ -56,7 +48,6 @@ jobs:
           date=$(date +%Y-%m-%d)
           echo "DATE=${date}" >> $GITHUB_ENV
 
-      # r2s require python3-pyelftools
       - name: Initialize environment
         if: env.ACT != 'true'
         env:
@@ -68,8 +59,11 @@ jobs:
           sudo -E systemctl stop docker
           sudo -E snap set system refresh.retain=2
           sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E rm -rf /usr/local/.ghcup /usr/share/swift /opt/hostedtoolcache /imagegeneration 2>/dev/null || true
           sudo -E sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo -E apt-mark hold grub-efi-amd64-signed
+          echo "Free disk after cleanup:"
+          df -Th / /mnt 2>/dev/null || df -Th /
           sudo -E apt update
           sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
           sudo -E apt -y full-upgrade
@@ -80,6 +74,8 @@ jobs:
           sudo -E apt -y clean
           sudo -E apt -y autoclean
           sudo -E timedatectl set-timezone "Asia/Shanghai"
+          echo "Free disk after init:"
+          df -Th / /mnt 2>/dev/null || df -Th /
 
       - name: Create Swap
         if: env.ACT != 'true'
@@ -95,6 +91,7 @@ jobs:
         run: |
           mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
           root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+          echo "mnt_size=$mnt_size"G, root_size=$root_size"G"
           sudo truncate -s "${mnt_size}"G /mnt/mnt.img
           sudo truncate -s "${root_size}"G /root.img
           sudo losetup /dev/loop6 /mnt/mnt.img
