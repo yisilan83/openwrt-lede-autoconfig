@@ -62,6 +62,8 @@ do_common() {
     # add luci-app-tailscale-community
     rm -rf package/luci-app-tailscale-community
     dl_git_sub https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community package/luci-app-tailscale-community luci-app-tailscale-community main
+    # move Tailscale from Services to VPN menu
+    sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' package/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json
 
     # add tailscale custom package
     rm -rf package/tailscale

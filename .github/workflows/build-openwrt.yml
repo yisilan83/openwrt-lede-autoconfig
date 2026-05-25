@@ -160,7 +160,9 @@ jobs:
           fi
 
       - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
+        run: |
+          echo "src-git nps https://github.com/djylb/nps-openwrt.git" >> openwrt/feeds.conf.default
+          cd openwrt && ./scripts/feeds update -a
 
       - name: Copy custom files
         run: |
