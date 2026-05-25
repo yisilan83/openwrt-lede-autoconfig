@@ -94,6 +94,8 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
     fi
     if [ -n "$LUCI_APP_ADGUARDHOME_DIR" ]; then
         copy_s $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/config/AdGuardHome $LUCI_APP_ADGUARDHOME_DIR/root/etc/config/AdGuardHome
+        mkdir -p $LUCI_APP_ADGUARDHOME_DIR/root/etc/adguardhome
+        copy_s $GITHUB_WORKSPACE/$APP_CONFIG_DIR/etc/adguardhome/adguardhome.yaml $LUCI_APP_ADGUARDHOME_DIR/root/etc/adguardhome/adguardhome.yaml
 
         # download latest adguardhome core
         dl_curl https://github.com/AdguardTeam/AdGuardHome/releases/latest/download/AdGuardHome_linux_${build_arch}.tar.gz $LUCI_APP_ADGUARDHOME_DIR/root/etc/AdGuardHome.tar.gz
