@@ -59,12 +59,6 @@ do_common() {
     rm -rf package/fancontrol
     dl_git_sub https://github.com/rockjake/luci-app-fancontrol package/fancontrol fancontrol
 
-    # add luci-app-npc (replaces frpc)
-    rm -rf package/luci-app-npc
-    dl_git_sub https://github.com/djylb/nps-openwrt package/luci-app-npc luci-app-npc master
-    rm -rf package/npc
-    dl_git_sub https://github.com/djylb/nps-openwrt package/npc npc master
-
     # add luci-app-tailscale-community
     rm -rf package/luci-app-tailscale-community
     dl_git_sub https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community package/luci-app-tailscale-community luci-app-tailscale-community main
