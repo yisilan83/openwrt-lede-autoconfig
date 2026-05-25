@@ -199,6 +199,14 @@ if [ -d "$GITHUB_WORKSPACE/$APP_CONFIG_DIR" ]; then
         cp $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}/tailscale $TAILSCALE_DIR/tailscale
         cp $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}/tailscaled $TAILSCALE_DIR/tailscaled
         chmod 755 $TAILSCALE_DIR/tailscale $TAILSCALE_DIR/tailscaled
+        # UPX compress to reduce binary size (~18M -> ~4.5M)
+        if command -v upx > /dev/null; then
+            echo "Compressing Tailscale with UPX --lzma --best..."
+            upx --lzma --best $TAILSCALE_DIR/tailscale
+            upx --lzma --best $TAILSCALE_DIR/tailscaled
+        else
+            echo "UPX not found, skipping compression"
+        fi
         rm -rf $TAILSCALE_DIR/tailscale.tgz $TAILSCALE_DIR/tailscale_1.98.3_${tailscale_arch}
         echo "Tailscale 1.98.3 installed for ${tailscale_arch}"
     fi
