@@ -1,0 +1,7 @@
+#!/bin/sh
+# Move Tailscale from Services to VPN menu
+TARGET="/usr/share/luci/menu.d/luci-app-tailscale-community.json"
+if [ -f "$TARGET" ]; then
+    sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' "$TARGET"
+fi
+exit 0
