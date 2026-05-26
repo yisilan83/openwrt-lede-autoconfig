@@ -17,9 +17,6 @@ jobs:
 
     runs-on: ubuntu-22.04
 
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
 
     strategy:
@@ -36,13 +33,16 @@ jobs:
         run: |
           echo -e "--------------------------CPU Info--------------------------"
           echo "CPU Physical Num: $(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
-          echo -e "CPU Core Num: $(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+          echo -e "CPU Core Num: $(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) 
+"
           echo "--------------------------Memory Info--------------------------"
           echo "Installed Memory Details:"
           sudo lshw -short -C memory | grep GiB
-          echo -e "\n"
+          echo -e "
+"
           echo "---------------------------Disk Info---------------------------"
-          echo -e  "Disk Num: $(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
+          echo -e  "Disk Num: $(ls /dev/sd* | grep -v [1-9] | wc -l) 
+"
           echo "Disk Details:"
           df -Th
 
@@ -110,7 +110,8 @@ jobs:
 
       - name: Check disk info after initialization
         run: |
-          echo -e  "Disk Num: $(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
+          echo -e  "Disk Num: $(ls /dev/sd* | grep -v [1-9] | wc -l) 
+"
           echo "Disk Details:"
           df -Th
 
@@ -163,7 +164,6 @@ jobs:
         run: |
           echo "src-git nps https://github.com/djylb/nps-openwrt.git" >> openwrt/feeds.conf.default
           echo "src-git opentailscale https://github.com/GuNanOvO/openwrt-tailscale.git;feed" >> openwrt/feeds.conf.default
-          echo "src-gz tailscale_community https://Tokisaki-Galaxy.github.io/luci-app-tailscale-community/all" >> openwrt/feeds.conf.default
           cd openwrt && ./scripts/feeds update -a
 
       - name: Copy custom files

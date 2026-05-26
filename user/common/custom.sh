@@ -63,14 +63,10 @@ do_common() {
     rm -rf package/luci-app-tailscale-community
     dl_git_sub https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community package/luci-app-tailscale-community luci-app-tailscale-community main
     # move Tailscale from Services to VPN menu
-    tailscale_menu_file="package/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json"
-    if [ ! -f "$tailscale_menu_file" ]; then
-        tailscale_menu_file="package/feeds/luci/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json"
-    fi
-    if [ -f "$tailscale_menu_file" ]; then
-        sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' "$tailscale_menu_file"
-    else
-        echo "Warning: Tailscale menu file not found at expected paths"
+    if [ -f "package/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json" ]; then
+        sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' package/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json
+    elif [ -f "package/feeds/luci/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json" ]; then
+        sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' package/feeds/luci/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json
     fi
 
     # update npc to latest version
