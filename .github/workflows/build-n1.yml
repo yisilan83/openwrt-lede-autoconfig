@@ -160,6 +160,7 @@ jobs:
         run: |
           echo "src-git nps https://github.com/djylb/nps-openwrt.git" >> openwrt/feeds.conf.default
           echo "src-git opentailscale https://github.com/GuNanOvO/openwrt-tailscale.git;feed" >> openwrt/feeds.conf.default
+          echo "src-gz tailscale_community https://Tokisaki-Galaxy.github.io/luci-app-tailscale-community/all" >> openwrt/feeds.conf.default
           cd openwrt && ./scripts/feeds update -a
 
       - name: Copy custom files
