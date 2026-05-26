@@ -59,6 +59,29 @@ do_common() {
     rm -rf package/fancontrol
     dl_git_sub https://github.com/rockjake/luci-app-fancontrol package/fancontrol fancontrol
 
+    # add luci-app-tailscale-community
+    rm -rf package/luci-app-tailscale-community
+    dl_git_sub https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community package/luci-app-tailscale-community luci-app-tailscale-community main
+    # move Tailscale from Services to VPN menu
+    tailscale_menu_file="package/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json"
+    if [ ! -f "$tailscale_menu_file" ]; then
+        tailscale_menu_file="package/feeds/luci/luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json"
+    fi
+    if [ -f "$tailscale_menu_file" ]; then
+        sed -i 's|"admin/services/tailscale"|"admin/vpn/tailscale"|g' "$tailscale_menu_file"
+    else
+        echo "Warning: Tailscale menu file not found at expected paths"
+    fi
+
+    # update npc to latest version
+    if [ -f "feeds/nps/npc/Makefile" ]; then
+        npc_latest=$(curl -kLs "https://api.github.com/repos/djylb/nps/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/v//g')
+        if [ -n "$npc_latest" ]; then
+            sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=${npc_latest}/g" feeds/nps/npc/Makefile
+            sed -i "s/^PKG_HASH.*/PKG_HASH:=skip/g" feeds/nps/npc/Makefile
+            echo "NPC version updated to ${npc_latest}"
+        fi
+    fi
 }
 
 # excute

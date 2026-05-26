@@ -1,0 +1,14 @@
+#!/bin/sh
+# Sort LUCI Services menu: AdGuardHome(1) > OpenClash(2) > NPC(3)
+for f in /usr/share/luci/menu.d/luci-app-adguardhome.json; do
+    [ -f "$f" ] && sed -i 's/"order":[[:space:]]*[0-9]*/"order": 1/g; s/"admin\/services\/adguardhome"/"admin\/services\/adguardhome",\n    "order": 1/g' "$f"
+done
+
+for f in /usr/share/luci/menu.d/luci-app-openclash.json; do
+    [ -f "$f" ] && sed -i 's/"order":[[:space:]]*[0-9]*/"order": 2/g' "$f"
+done
+
+for f in /usr/share/luci/menu.d/luci-app-npc.json; do
+    [ -f "$f" ] && sed -i 's/"order":[[:space:]]*[0-9]*/"order": 3/g' "$f"
+done
+exit 0
